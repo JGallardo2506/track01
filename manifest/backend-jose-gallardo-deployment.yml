@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-jose-gallardo-deployment
+  namespace: jose-gallardo-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-jose-gallardo-deployment
+  template:
+    metadata:
+      labels:
+        app: backend-jose-gallardo-deployment
+    spec:
+      containers:
+      - name: backend-jose-gallardo-deployment
+        image: jose2506/backend:latest
+        envFrom:
+        - configMapRef:
+            name: jose-gallardo-configmap

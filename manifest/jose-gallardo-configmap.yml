@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jose-gallardo-configmap
+  namespace: jose-gallardo-namespace
+data:
+  DATABASE_URL: "r2dbc:postgresql://ep-dry-feather-a50464ji.us-east-2.aws.neon.tech:5432/jose?sslmode=require"  
+  APPLICATION_PROPERTIES: |  
+    server.port=8085  

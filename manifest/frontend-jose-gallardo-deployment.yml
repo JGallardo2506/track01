@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-jose-gallardo-deployment
+  namespace: jose-gallardo-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend-jose-gallardo-deployment
+  template:
+    metadata:
+      labels:
+        app: frontend-jose-gallardo-deployment
+    spec:
+      containers:
+      - name: frontend-jose-gallardo-deployment
+        image: jose2506/frontend:latest
+        ports:
+        - containerPort: 4200
