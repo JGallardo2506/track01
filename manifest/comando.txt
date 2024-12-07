@@ -1,8 +1,14 @@
 # kubectl apply -f jose-gallardo-configmap.yml
  kubectl apply -f jose-gallardo-namespace.yml
  kubectl apply -f backend-jose-gallardo-service.yml
-  kubectl apply -f frontend-jose-gallardo-service.yml mm
+  kubectl apply -f frontend-jose-gallardo-service.yml 
   kubectl apply -f backend-jose-gallardo-deployment.yml
    kubectl apply -f frontend-jose-gallardo-deployment.yml
 
    kubectl apply -f backend-jose-gallardo-hpa.yml
+
+   minikube service backend-jose-gallardo-service -n jose-gallardo-namespace
+
+kubectl config set-context --current --namespace=jose-gallardo-namespace
+
+curl http://192.168.49.2:30001/vaccines

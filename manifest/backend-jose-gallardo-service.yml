@@ -4,10 +4,10 @@ metadata:
   name: backend-jose-gallardo-service
   namespace: jose-gallardo-namespace
 spec:
-  type: NodePort      # Cambia a LoadBalancer si estás en un entorno de nube
+  type: NodePort
   ports:
-  - port: 30001       # Puerto que el Service expondrá
-    targetPort: 8085 # Puerto en el contenedor donde tu aplicación escucha
-    nodePort: 30001   # Puerto asignado en el nodo, opcional
+  - port: 30001
+    targetPort: 8085
+    nodePort: 30001
   selector:
-    app: backend-jose-gallardo-deployment  # Cambiado para coincidir con las etiquetas del Deployment
+    app: backend-jose-gallardo-deployment

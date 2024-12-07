@@ -19,3 +19,5 @@ spec:
         envFrom:
         - configMapRef:
             name: jose-gallardo-configmap
+        ports:
+        - containerPort: 8085
