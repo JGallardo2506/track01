@@ -1,0 +1,138 @@
+<header class="bg-white shadow" style="background-color: white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 2rem 0;">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style="max-width: 80rem; padding-left: 2rem; padding-right: 2rem; text-align: left;">
+    <h1 class="text-7xl font-extrabold text-blue-900 dark:text-blue-400 md:text-6xl lg:text-7xl"
+        style="font-size: 3rem; font-weight: 800; color: #1E3A8A; margin: 0;">
+      <span class="text-transparent bg-clip-text bg-gradient-to-r to-blue-600 from-sky-400"
+            style="background: linear-gradient(to right, #38BDF8, #2563EB); -webkit-background-clip: text; color: transparent;">
+        Vacuna
+      </span>
+    </h1>
+  </div>
+</header>
+
+<div class="container mx-auto my-8 p-4 bg-white shadow-md rounded-lg">
+  <h2 class="text-2xl font-bold mb-4">Vacuna Listado</h2>
+
+  <!-- Entrada de datos -->
+  <div class="mb-4">
+    <input placeholder="Nombre" class="border p-2 mr-2 rounded" [(ngModel)]="nameFilter" (input)="filterVaccines()" />
+    <input placeholder="Descripción" class="border p-2 mr-2 rounded" [(ngModel)]="descriptionFilter" (input)="filterVaccines()" />
+    <button class="bg-blue-600 text-white px-4 py-2 rounded" (click)="openModal()">Agregar Vacuna</button>
+  </div>
+  
+  <div class="mb-4 flex items-center">
+    <label for="statusSwitcher" class="mr-3 text-lg font-semibold">Estado:</label>
+  
+    <!-- Switcher de estado -->
+    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+      <input 
+        type="checkbox" 
+        id="statusSwitcher" 
+        [(ngModel)]="isActive" 
+        (change)="toggleActive()"
+        class="toggle-input absolute block w-6 h-6 rounded-full bg-white border-2 appearance-none cursor-pointer"
+      />
+      <span 
+        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+        [ngClass]="isActive ? 'bg-green-500' : 'bg-red-500'">
+      </span>
+    </div>
+  
+    <!-- Texto dinámico que cambia según el estado -->
+    <span class="ml-2 font-weight-bold" [ngClass]="isActive ? 'text-green-500' : 'text-red-500'">
+      {{ isActive ? 'Activo' : 'Inactivo' }}
+    </span>
+  </div>
+  
+  <!-- Tabla de proveedores -->
+  <table class="min-w-full text-center border-separate" style="border-spacing: 0 10px;">
+    <thead>
+      <tr>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100 rounded-tl-lg">Nombre Vacuna</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Tipo Vacuna</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Descripción</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Fecha de fabricación</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Fecha de caducidad</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Precio</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Cantidad</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100 rounded-tr-lg">Estado</th>
+        <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100 rounded-tr-lg">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vaccine of filteredVaccines">
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.nameVaccine }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.typeVaccine }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.description }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.manufacturingDate }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.expirationDate }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.price }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.stock }}</td>
+        <td class="px-6 py-4 bg-gray-100">{{ vaccine.active === 'A' ? 'Activo' : 'Inactivo' }}</td>
+        <td class="px-6 py-4 bg-gray-100"> 
+          <button *ngIf="vaccine.active === 'A'" class="bg-yellow-500 text-white px-3 py-1 rounded mr-2" (click)="editVaccineDetails(vaccine)">Editar</button>
+          <button *ngIf="vaccine.active === 'A'" class="bg-red-500 text-white px-3 py-1 rounded" (click)="inactivateVaccine(vaccine.id)">Eliminar</button>
+          <button *ngIf="vaccine.active === 'I'" class="bg-green-500 text-white px-3 py-1 rounded mr-2" (click)="activateVaccine(vaccine.id)">Restaurar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="isLoading" class="text-center mt-4">
+    <p>Cargando vacunas...</p>
+  </div>
+</div>
+
+<!-- Modal para agregar/editar vacuna -->
+<div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-lg w-96">
+    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Vacuna' : 'Agregar Vacuna' }}</h2>
+    <form (ngSubmit)="isEditMode ? confirmUpdateVaccine() : addVaccine()">
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="nameVaccine">Nombre Vacuna</label>
+        <input class="border p-2 w-full rounded" id="nameVaccine" [(ngModel)]="VaccineForm.nameVaccine" name="nameVaccine" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="typeVaccine">Tipo Vacuna</label>
+        <input class="border p-2 w-full rounded" id="typeVaccine" [(ngModel)]="VaccineForm.typeVaccine" name="typeVaccine" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="description">Descripción</label>
+        <input class="border p-2 w-full rounded" id="description" [(ngModel)]="VaccineForm.description" name="description" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="manufacturingDate">Fecha de fabricación</label>
+        <input class="border p-2 w-full rounded" id="manufacturingDate" [(ngModel)]="VaccineForm.manufacturingDate" name="manufacturingDate" type="date" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="expirationDate">Fecha de caducidad</label>
+        <input class="border p-2 w-full rounded" id="expirationDate" [(ngModel)]="VaccineForm.expirationDate" name="expirationDate" type="date" required />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="price">Precio</label>
+        <input class="border p-2 w-full rounded" id="price" [(ngModel)]="VaccineForm.price" name="price" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-lg font-semibold" for="stock">Cantidad</label>
+        <input class="border p-2 w-full rounded" id="stock" [(ngModel)]="VaccineForm.stock" name="stock" />
+      </div>
+      <div class="flex justify-end">
+        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded mr-2" (click)="closeModal()">Cancelar</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">{{ isEditMode ? 'Actualizar' : 'Agregar' }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de errores de validación -->
+<div *ngIf="isValidationErrorModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-lg w-96">
+    <h2 class="text-2xl font-bold mb-4">Errores de Validación</h2>
+    <ul class="mb-4">
+      <li *ngFor="let error of validationErrors" class="text-red-500">{{ error }}</li>
+    </ul>
+    <div class="flex justify-end">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded" (click)="closeModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
